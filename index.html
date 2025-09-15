@@ -28,7 +28,7 @@ button { padding:15px 30px; font-size:20px; cursor:pointer; margin-top:20px; }
 <div id="startScreen">
   <h1>Juego 2D Avanzado</h1>
   <p>W A S D = mover | SPACE = disparar | Móviles: usa los botones</p>
-  <button id="startBtn">Jugar</button>
+  <button id="startBtn" disabled>Jugar</button>
 </div>
 
 <div id="gameOverScreen" style="display:none;">
@@ -61,6 +61,17 @@ resizeCanvas();
 // Sprites locales
 const playerImg = new Image(); playerImg.src = "images/player.png";
 const enemyImg = new Image(); enemyImg.src = "images/enemy.png";
+
+// Esperar que las imágenes carguen
+let assetsLoaded = 0;
+const totalAssets = 2;
+playerImg.onload = () => { assetsLoaded++; checkAssets(); };
+enemyImg.onload = () => { assetsLoaded++; checkAssets(); };
+function checkAssets(){
+    if(assetsLoaded === totalAssets){
+        document.getElementById("startBtn").disabled = false;
+    }
+}
 
 // Jugador
 const player = { x:100, y:250, w:50, h:50, speed:5, shootCooldown:0 };
@@ -113,7 +124,6 @@ function spawnEnemy(){ if(!gameRunning) return; enemies.push({ x:canvas.width-60
 // Update
 function update(){
     if(!gameRunning) return;
-    // Fondo
     ctx.fillStyle="#222"; ctx.fillRect(0,0,canvas.width,canvas.height);
 
     // Movimiento jugador
@@ -180,7 +190,14 @@ function endGame(){
 }
 
 // Botones
-document.getElementById("startBtn").onclick = function(){ document.getElementById("startScreen").style.display="none"; startGame(); };
+document.getElementById("startBtn").onclick = function(){
+    if(assetsLoaded === totalAssets){
+        document.getElementById("startScreen").style.display="none"; 
+        startGame();
+    } else {
+        alert("Cargando sprites, espera un momento...");
+    }
+};
 document.getElementById("restartBtn").onclick = function(){ document.getElementById("gameOverScreen").style.display="none"; startGame(); };
 </script>
 </body>
